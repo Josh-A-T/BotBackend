@@ -1,0 +1,1 @@
+web: cd Backend && python -m flask --app tracker.py run --host=0.0.0.0 --port=$PORT
