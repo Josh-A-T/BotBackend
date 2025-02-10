@@ -8,25 +8,40 @@ import os
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-
 # Initialize TinyDB
 bug_db = TinyDB("bugs.json")
 comments_db = TinyDB("comments.json")  # Separate DB for comments
 
-# Helper function to convert to Julian date
-def get_julian_date():
-    return datetime.now().strftime("%j")  
+# Helper function to convert to DD-MM-YYYY HH:MM format
+def get_dateTime():
+    return datetime.now().strftime("%m-%d-%Y %H:%M")
+
+def get_bugReportID():
+    unix_time = int(time.time())
+    formatted = datetime.now().strftime("%m%d")
+    report_id = f"{unix_time}{formatted}"
+    return report_id
 
 @app.route("/")
 def home():
-    return "Bug Tracker API is running! TEST"
-
+    return "Bug Tracker API is running! Visit /api/"
 
 #####
 ## These next few sections are for getting and posting bug reports and well as listing all available ones
 ## /api/bugs
 ## /api/bugs/{id}
+#
+# {
+#    "id": unix timecode,
+#    "issue_id": "unix timecode",
+#    "username": "captured username",
+#    "date": "dd-mm-yyyy hh:mm",
+#    "issue": "captured issue from discord bot",
+#    "status": "Open" 
+# }
+#
 #####
+
 @app.route("/api/bugs", methods=["POST"])
 def create_bug():
     data = request.json
@@ -41,9 +56,9 @@ def create_bug():
     # Create bug record
     new_bug = {
         "id": bug_id,  
-        "issue_id": f"{bug_id}",  
+        "issue_id": bug_id,  
         "username": username,
-        "date": get_julian_date(),
+        "date": get_dateTime(),
         "issue": issue,
         "status": "Open"
     }
@@ -92,7 +107,19 @@ def get_all_bugs():
 ## These functions are for the comments database, much like bugs it lists all and by id
 ## /api/comments
 ## /api/comments/{id}
+#
+# {
+#    "id": "unix timecode",
+#    "username": "captured username",
+#    "date": "dd-mm-yyyy hh:mm",
+#    "comment": "Captured comment",
+#    "issue_id": "bug report issue_id",
+#    "reply_to": " ",
+#    "is_pinned:": false
+# }
+#
 #####
+
 @app.route("/api/comments", methods=["POST"])
 def create_comment():
     data = request.json
@@ -107,16 +134,18 @@ def create_comment():
     # Create comment record
     new_comment = {
         "id": comment_id,
-        "date": get_julian_date(),
+        "username": "username",
+        "date": get_dateTime(),
         "comment": comment,
-        "issue_id": issue_id
+        "issue_id": issue_id,
+        "reply_to": " ",
+        "is_pinned": False
     }
 
     # Add the comment to TinyDB
     comments_db.insert(new_comment)
 
     return jsonify({"message": "Comment added successfully!", "comment": new_comment}), 201
-
 
 @app.route("/api/comments/<int:bug_id>", methods=["GET"])
 def get_comments_for_issue(bug_id):
@@ -140,7 +169,6 @@ def get_comments_for_issue(bug_id):
         print(f"Error: {e}")  # Debugging
         return jsonify({"message": "Internal server error", "error": str(e)}), 500
 
-
 @app.route("/api/comments", methods=["GET"])
 def get_all_comments():
     # Retrieve all comments from comments_db
@@ -148,8 +176,11 @@ def get_all_comments():
     return jsonify(all_comments), 200
 
 #####
+##
 ## Update bug report status from 'Open', 'In Progress', 'Closed', and 'Resolved'
+##
 #####
+
 @app.route("/api/bugs/<int:bug_id>/status", methods=["PUT"])
 def update_bug_status(bug_id):
     data = request.json
@@ -170,9 +201,37 @@ def update_bug_status(bug_id):
 
     return jsonify({"message": "Bug status updated successfully!"}), 200
 
+@app.route("/api/", methods=["GET"])
+def api_index():
+    endpoint_descriptions = {
+        "GET /": "Home page",
+        "GET /api/": "List all available API endpoints",
+        "GET /api/bugs": "Get all bugs",
+        "POST /api/bugs": "Report a new bug",
+        "GET /api/bugs/<int:bug_id>": "Get details of a specific bug",
+        "PUT /api/bugs/<int:bug_id>/status": "Update the status of a bug",
+        "GET /api/comments": "Get all comments",
+        "POST /api/comments": "Add a new comment",
+        "GET /api/comments/<int:bug_id>": "Get comments for a specific bug"
+    }
+
+    endpoints = {}
+    for rule in app.url_map.iter_rules():
+        if rule.endpoint != "static":  # Exclude static routes
+            route = rule.rule
+            methods = sorted(rule.methods - {"HEAD", "OPTIONS"})
+            for method in methods:
+                key = f"{method} {route}"
+                description = endpoint_descriptions.get(key, "No description available")
+                if route not in endpoints:
+                    endpoints[route] = {"methods": [], "descriptions": {}}
+                    
+                endpoints[route]["methods"].append(method)
+                endpoints[route]["descriptions"][method] = description
+
+    return jsonify({"endpoints": endpoints}), 200
 
 ## Init application
-
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
