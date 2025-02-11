@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify, render_template
 from tinydb import TinyDB, Query
 from datetime import datetime
 from flask_cors import CORS
-import os
+#import os
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -232,6 +232,11 @@ def api_index():
     return jsonify({"endpoints": endpoints}), 200
 
 ## Init application
+
+
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(debug=True)
+    
+#if __name__ == "__main__":
+#    port = int(os.getenv("PORT", 5000))
+#    app.run(host="0.0.0.0", port=port)

@@ -1,0 +1,58 @@
+{
+    "_default": {
+        "1": {
+            "id": "1707409231",
+            "username": "GameTester42",
+            "date": "01-01-2025",
+            "comment": "This issue occurs on both Android and iOS devices.",
+            "issue_id": "1707409001",
+            "reply_to": null,
+            "is_pinned:": false
+        },
+        "2": {
+            "id": "1707409102",
+            "username": "Anonymous",
+            "date": "01-02-2025",
+            "comment": "We are investigating the root cause of this problem.",
+            "issue_id": "1707409001",
+            "reply_to": null,
+            "is_pinned:": false
+        },
+        "3": {
+            "id": "1707409203",
+            "username": "DevQA",
+            "date": "01-03-2025",
+            "comment": "A temporary workaround is to restart the tutorial level.",
+            "issue_id": "1707409102",
+            "reply_to": null,
+            "is_pinned:": false
+        },
+        "4": {
+            "id": "1707409304",
+            "username": "SpeedRunnerPro",
+            "date": "01-04-2025",
+            "comment": "The water texture issue seems to be related to the shader settings.",
+            "issue_id": "1707409203",
+            "reply_to": null,
+            "is_pinned:": false
+        },
+        "5": {
+            "id": "1707409405",
+            "username": "BugHunter",
+            "date": "01-05-2025",
+            "comment": "We will release a patch to fix the missing footstep sounds.",
+            "issue_id": "1707409304",
+            "reply_to": null,
+            "is_pinned:": false
+        },   
+        "6": {
+            "id": "1707409112",
+            "username": "Anonymous",
+            "date": "01-02-2025",
+            "comment": "Reply Test",
+            "issue_id": "1707409001",
+            "reply_to": "1707409102",
+            "is_pinned:": false
+        }
+    }
+}
