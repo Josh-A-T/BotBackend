@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='stylesheet.css') }}">
+</head>
+
+<body>
+  <nav class="sidebar">
+    <div class="sidebar-logo">[Sidebar logo]</div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Getting Started</div>
+      <a href="installing.html" class="nav-link active">Installing</a>
+      <a href="discordbotconfig.html" class="nav-link">Discord Bot Config</a>
+      <a href="api.html" class="nav-link">API Ref</a>
+    </div>
+  </nav>
+
+  <section class="main-content">
+    <div class="content-card">
+      <h1>API Overview</h1>
+      <hr />
+      Manage bug reports with the following endpoints. All responses are in
+      JSON format.<br />
+      /api/bugs/<br />
+      /api/bugs{id}<br />
+      /api/comments<br />
+      /api/comments/{id}<br />
+      /api/bug/{id}/status<br />
+
+      Bug Schema
+      <div class="code-block">
+        <code>
+          { <br />
+            "id": [unix timestamp],<br />
+            "issue_id": "[same as id]",<br />
+            "username": "[Username]",<br />
+            "date": "[DD-MM-YYYY HH:SS]",<br />
+            "issue": "[Bug Report]",<br />
+            "status": "[Open|in progress|Closed|Resolved]"<br />
+        }
+            
+          </code>
+      </div>
+      ID is stored in unix time code, and are unique for each issue or
+      comment. ID and issue_id should always match for any given bug. Issue_id is the id of the initial bug. All comments will have
+      the same issue_id as the issue theyre responding to. More on that in the commments schema. Date is stored in a
+      typical julian format. Issue and Username will be collected from the
+      discord bot when a user submits an issue. By default all bugs start with the status of open, they can be Open, In Progress, Resolved and Closed.
+      <br />
+      Running the flask backend<br />
+      >python -m flask --app tracker.py run<br />
+      <br />
+      Running the react app<br />
+      npm run dev<br />
+      Comment Schema
+      <div class="code-block">
+        <code>
+          { <br />
+            "id": "[unix timestamp]",<br />
+            "issue_id": "[issue_id]",<br />
+            "reply_to": [null|issue_id]<br />
+            "is_pinned": [bool] <br />
+            "username": "[Username]",<br />
+            "date": "[DD-MM-YYYY HH:MM]",<br />
+            "comment": "[User Comment]",<br />
+        },<br />
+          </code>
+      </div>
+      <p>A lot from the bug schema carries over. However comments are always in the same thread as a bug and can reply to comments.
+        For example a bug with an id of 1 will have every comment with the same issue_id. Comments can reply to comments within the same bug thread with the reply_to field. if its null it will be a parent to the main comment. 
+        This is all a weird convuluted way to set up threaded discussions in the future. is_pinned is also an idea for the future. Potential solutions for common problems might be pinned so theyre always at the top of the thread.
+      </p>
+
+    </div>
+
+    <div class="content-card">
+      <h1>Get All Bugs</h1>
+      <p>/api/bugs <span class="badge" id="green-badge">Get</span><br /></p>
+
+      Example Response
+    </div>
+
+    <div class="content-card">
+      <h1>Get Single Bug</h1>
+      <p>
+        /api/bugs/{issue_id} <span class="badge" id="green-badge">Get</span><br />
+      </p>
+      Example Response
+    </div>
+    <div class="content-card">
+      <h1>Get comments</h1>
+      <p>
+        /api/comments <span class="badge" id="green-badge">Get</span><br />
+      </p>
+      Returns all comments
+    </div>
+    <div class="content-card">
+      <h1>Get Single Bug</h1>
+      <p>
+        /api/comments/{issue_id}
+        <span class="badge" id="green-badge">Get</span><br />
+      </p>
+      Get all comments for a given issue_id
+    </div>
+    <div class="content-card">
+      <h1>Post Bug</h1>
+      <p>
+        /api/bugs/{issue_id} <span class="badge" id="yellow-badge">Post</span><br />
+      </p>
+      Example Response
+    </div>
+    <div class="content-card">
+      <h1>Post comment</h1>
+      <p>
+        /api/comments <span class="badge" id="yellow-badge">Post</span><br />
+      </p>
+      Example Response
+    </div>
+    <div class="content-card">
+      <h1>Update Status</h1>
+      <p>
+        /api/bugs/{id}/status <span class="badge" id="yellow-badge">Put</span><br />
+      </p>
+      Example Response
+    </div>
+  </section>
+</body>
+
+</html>

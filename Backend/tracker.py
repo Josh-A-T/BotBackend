@@ -1,5 +1,5 @@
 import time
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from tinydb import TinyDB, Query
 from datetime import datetime
 from flask_cors import CORS
@@ -18,13 +18,13 @@ def get_dateTime():
 
 def get_bugReportID():
     unix_time = int(time.time())
-    formatted = datetime.now().strftime("%m%d")
+    formatted = datetime.now().strftime("%H%M")
     report_id = f"{unix_time}{formatted}"
     return report_id
 
 @app.route("/")
 def home():
-    return "Bug Tracker API is running! Visit /api/"
+    return render_template("index.html")
 
 #####
 ## These next few sections are for getting and posting bug reports and well as listing all available ones
@@ -56,7 +56,7 @@ def create_bug():
     # Create bug record
     new_bug = {
         "id": bug_id,  
-        "issue_id": bug_id,  
+        "issue_id": get_bugReportID(),  
         "username": username,
         "date": get_dateTime(),
         "issue": issue,
