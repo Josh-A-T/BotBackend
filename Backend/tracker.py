@@ -22,7 +22,7 @@ def get_dateTime():
 def get_bugReportID():
     unix_time = int(time.time())
     formatted = datetime.now().strftime("%M%S")
-    report_id = f"{unix_time}{formatted}"
+    report_id = int(f"{unix_time}{formatted}")
     return report_id
 
 @app.route("/")
@@ -50,7 +50,7 @@ def create_bug():
     data = request.json
 
     # Generate unique ID using Unix timestamp
-    bug_id = int(time.time())
+    bug_id = get_bugReportID()
 
     # Extract data from the request, ill get this from the bot later
     username = data.get("username", "Anonymous")
@@ -241,7 +241,7 @@ def api_index():
 
     return jsonify({"endpoints": endpoints}), 200
 
-@app.route("/api/bugs/<string:issue_id>", methods=["DELETE"])
+@app.route("/api/bugs/<int:issue_id>", methods=["DELETE"])
 def delete_bug(issue_id):
     try:
         Bug = Query()
